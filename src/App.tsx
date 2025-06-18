@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 const App = () => {
   const [length, setLength] = useState<number>(12);
-  const [useLetters, setUseLetters] = useState(true);
-  const [useNumbers, setUseNumbers] = useState(true);
-  const [useSymbols, setUseSymbols] = useState(true);
-  const [password, setPassword] = useState("");
+  const [useLetters, setUseLetters] = useState<boolean>(true);
+  const [useNumbers, setUseNumbers] = useState<boolean>(true);
+  const [useSymbols, setUseSymbols] = useState<boolean>(true);
+  const [password, setPassword] = useState<string>("");
   const [strength, setStrength] = useState<"Weak" | "Medium" | "Strong" | "">("");
 
   const generatePassword = () => {
-    let characters = "";
-    if (useLetters) characters += "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    if (useNumbers) characters += "0123456789";
-    if (useSymbols) characters += "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    let chars = "";
+    if (useLetters) chars += "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if (useNumbers) chars += "0123456789";
+    if (useSymbols) chars += "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-    if (characters.length === 0) {
+    if (chars.length === 0) {
       setPassword("Please select at least one option");
       setStrength("");
       return;
@@ -23,12 +23,16 @@ const App = () => {
 
     let newPassword = "";
     for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      newPassword += characters[randomIndex];
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      newPassword += chars[randomIndex];
     }
 
     setPassword(newPassword);
     evaluateStrength(newPassword);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(password);
   };
 
   const evaluateStrength = (pwd: string) => {
@@ -39,14 +43,8 @@ const App = () => {
     if (pwd.length >= 12) score++;
 
     if (score <= 1) setStrength("Weak");
-    else if (score <= 3) setStrength("Medium");
+    else if (score === 2 || score === 3) setStrength("Medium");
     else setStrength("Strong");
-  };
-
-  const copyToClipboard = () => {
-    if (password && password !== "Please select at least one option") {
-      navigator.clipboard.writeText(password);
-    }
   };
 
   return (
